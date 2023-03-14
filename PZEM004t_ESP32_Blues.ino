@@ -77,9 +77,9 @@ void loop() {
     float frequency = pzem.frequency();
     float pf = pzem.pf();
 
-    J *rsp = notecard.requestAndResponse(notecard.newRequest("card.time"));
-    if(rsp != null){
-      datetime = JGetNumber(rsp, "time");
+    J *resp = notecard.requestAndResponse(notecard.newRequest("card.time"));
+    if(resp != NULL){
+      datetime = JGetNumber(resp, "time");
     }
     else{
       datetime = 0;
