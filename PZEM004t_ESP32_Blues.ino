@@ -94,12 +94,16 @@ void loop() {
     }
   }
   if(counter == 9){
+    //Create the request
     J *req = notecard.newRequest("note.add");
     if(req != NULL){
       JAddBoolToObject(req, "sync", true);
+      //Create a JSON array to hold the sensor readings
       J *bodyArray = JCreateArray();
       for(int i = 0; i < 10; i++){
+        //Create a temporary object to hold the individual sensor values
         J *bodyObject = JCreateObject();
+        //Add the sensor values for each struct in the struct-array to the JSON object
         JAddNumberToObject(bodyObject, "voltage", round2(readings[i].voltage));
         JAddNumberToObject(bodyObject, "current", round2(readings[i].current));
         JAddNumberToObject(bodyObject, "power", round2(readings[i].power));
@@ -108,18 +112,23 @@ void loop() {
         JAddNumberToObject(bodyObject, "powerFactor", round2(readings[i].powerFactor));
         JAddStringToObject(bodyObject, "sendorID", readings[i].sensor_ID);
         JAddStringToObject(bodyObject, "datetime", readings[i].datetime);
-
+        //Add the JSON object to the JSON array
         JAddItemToArray(bodyArray, bodyObject);
       }
+      //Add the JSON array to the req object
       JAddItemToObject(req, "body", bodyArray);
     }
     notecard.sendRequest(req);
+    //Reset the counter back to zero
     counter = 0;
   }
   Serial.println();
   delay(5000);
 }
 
+/**
+ * Function to round doubles/floats to 2 decimal places
+ */
 double round2(double value) {
    return (int)(value * 100 + 0.5) / 100.0;
 }
