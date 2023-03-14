@@ -66,29 +66,21 @@ void setup() {
 
 void loop() {
 
-  float voltage;
-  float current;
-  float power;
-  float energy;
-  float frequency;
-  float pf;
-
   if(counter < 10){
+
+    // Read the data from the sensor
+    float voltage = pzem.voltage();
+    float current = pzem.current();
+    float power = pzem.power();
+    float energy = pzem.energy();
+    float frequency = pzem.frequency();
+    float pf = pzem.pf();
 
     // Check if the data is valid
     if(isnan(voltage) || isnan(current) || isnan(power) || isnan(energy) || isnan(frequency) || isnan(pf)){
         Serial.println("Error reading voltage");
     }
-
     else{
-      // Read the data from the sensor
-      float voltage = pzem.voltage();
-      float current = pzem.current();
-      float power = pzem.power();
-      float energy = pzem.energy();
-      float frequency = pzem.frequency();
-      float pf = pzem.pf();
-  
       energyReading temp = {voltage, current, power, energy, frequency, pf};
       readings[counter] = temp;
     }
@@ -121,6 +113,9 @@ void loop() {
     notecard.sendRequest(req);
     //Reset the counter back to zero
     counter = 0;
+  }
+  else{
+    counter++;
   }
   Serial.println();
   delay(5000);
