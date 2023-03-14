@@ -10,6 +10,7 @@ Notecard notecard;
 
 PZEM004Tv30 pzem(Serial2, 16, 17);
 
+long datetime;
 
 typedef struct{
   float voltage;
@@ -18,7 +19,7 @@ typedef struct{
   float energy;
   float frequency;
   float powerFactor;
-  const char* datetime;
+  long datetime;
   const char* sensor_ID;
 } energyReading;
 
@@ -29,7 +30,7 @@ int counter = 0;
 
 String apikey = "super-secret-api-key";
 
-String sensor_id = "PZEM004t_001";
+const char* SENSOR_ID = "PZEM004t_001";
 
 void setup() {
     Serial.begin(115200);
@@ -76,12 +77,20 @@ void loop() {
     float frequency = pzem.frequency();
     float pf = pzem.pf();
 
+    J *rsp = notecard.requestAndResponse(notecard.newRequest("card.time"));
+    if(rsp != null){
+      datetime = JGetNumber(rsp, "time");
+    }
+    else{
+      datetime = 0;
+    }
+
     // Check if the data is valid
     if(isnan(voltage) || isnan(current) || isnan(power) || isnan(energy) || isnan(frequency) || isnan(pf)){
         Serial.println("Error reading voltage");
     }
     else{
-      energyReading temp = {voltage, current, power, energy, frequency, pf};
+      energyReading temp = {voltage, current, power, energy, frequency, pf, datetime, SENSOR_ID};
       readings[counter] = temp;
     }
   }
@@ -103,7 +112,7 @@ void loop() {
         JAddNumberToObject(bodyObject, "frequency", round2(readings[i].frequency));
         JAddNumberToObject(bodyObject, "powerFactor", round2(readings[i].powerFactor));
         JAddStringToObject(bodyObject, "sendorID", readings[i].sensor_ID);
-        JAddStringToObject(bodyObject, "datetime", readings[i].datetime);
+        JAddNumberToObject(bodyObject, "datetime", readings[i].datetime);
         //Add the JSON object to the JSON array
         JAddItemToArray(bodyArray, bodyObject);
       }
