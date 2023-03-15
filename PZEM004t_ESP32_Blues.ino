@@ -3,7 +3,7 @@
 #include <Wire.h>
 
 #define usbSerial Serial
-#define PRODUCT_UID "product_uid_goes_here"
+#define PRODUCT_UID "com.unipart.samuel.third:test_project"
 #define myProductID PRODUCT_UID
 
 Notecard notecard;
@@ -28,7 +28,7 @@ energyReading readings[10];
 int counter = 0;
 
 
-String apikey = "super-secret-api-key";
+String apikey = "Is3ntJ6ahB851tsNYS7LiV0uLPvtxdsjmUwzZKUP";
 
 const char* SENSOR_ID = "PZEM004t_001";
 
@@ -117,7 +117,9 @@ void loop() {
         JAddItemToArray(bodyArray, bodyObject);
       }
       //Add the JSON array to the req object
-      JAddItemToObject(req, "body", bodyArray);
+      J *body = JCreateObject();
+      JAddItemToObject(body, "sensors", bodyArray);
+      JAddItemToObject(req, "body", body);
     }
     notecard.sendRequest(req);
     //Reset the counter back to zero
@@ -127,7 +129,7 @@ void loop() {
     counter++;
   }
   Serial.println();
-  delay(5000);
+  delay(30 * 1000);
 }
 
 /**
